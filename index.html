@@ -12,7 +12,6 @@
             --text-muted: #64748b;
             --accent: #10b981;
             --marking-green: #007a33;
-            --accent-hover: #059669;
             --error: #ef4444;
             --border: #e2e8f0;
             --highlight: #f1f5f9;
@@ -30,7 +29,6 @@
             align-items: center;
         }
 
-        /* Classification Marking Style */
         .marking {
             color: var(--marking-green);
             font-size: 0.75rem;
@@ -40,10 +38,22 @@
             text-transform: uppercase;
         }
 
-        .quiz-container {
+        .container {
             width: 100%;
             max-width: 650px;
             padding-bottom: 60px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-weight: 800; /* BOLD TITLE */
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
         .selector-box {
@@ -57,27 +67,16 @@
         }
 
         select {
-            padding: 10px 15px;
+            padding: 12px 15px;
             font-size: 1rem;
             border-radius: 8px;
             border: 1px solid var(--border);
             background: white;
             color: var(--text-main);
             cursor: pointer;
-            width: 80%;
+            width: 95%;
             outline: none;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        /* Bold Title */
-        h1 {
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         #results-summary {
@@ -94,30 +93,36 @@
             margin-bottom: 30px;
         }
 
-        .score-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .question-card {
+        .card {
             background: var(--card-bg);
             padding: 30px;
             margin-bottom: 24px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .question-text {
+        .question-text, .label-text {
             font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: block;
         }
 
-        .option-item {
-            margin-bottom: 12px;
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
         }
+
+        input:focus { border-color: var(--accent); }
+
+        .option-item { margin-bottom: 12px; }
 
         .option-item label {
             display: flex;
@@ -129,16 +134,9 @@
             transition: background 0.2s ease;
         }
 
-        .option-item label:hover {
-            background-color: var(--highlight);
-        }
+        .option-item label:hover { background-color: var(--highlight); }
 
-        input[type="radio"] {
-            margin-right: 12px;
-            accent-color: var(--accent);
-            width: 18px;
-            height: 18px;
-        }
+        input[type="radio"] { margin-right: 12px; accent-color: var(--accent); width: 18px; height: 18px; }
 
         .submit-btn {
             display: block;
@@ -151,17 +149,14 @@
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.2s;
         }
-
-        .submit-btn:hover { opacity: 0.9; }
 
         .feedback-area {
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px dashed var(--border);
             display: none;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .is-correct { background-color: #ecfdf5 !important; border-color: var(--accent) !important; color: #065f46; }
@@ -175,50 +170,78 @@
             background: #f0fdf4;
             padding: 8px;
             border-radius: 4px;
-            border: 1px solid #dcfce7;
         }
 
         .hidden { display: none !important; }
-
-        @media (max-width: 480px) {
-            .question-card { padding: 20px; }
-        }
     </style>
 </head>
 <body>
 
     <div class="marking">UNCLASSIFIED</div>
 
-    <div class="quiz-container">
+    <div class="container">
         <header>
-            <h1>TF STUDY SUITE</h1>
-            <p id="quiz-subtitle" style="color: var(--text-muted);">Select a Quiz to Begin</p>
+            <h1>TF Study Suite</h1>
+            <p id="suite-subtitle" style="color: var(--text-muted);">Training & Calculation Tools</p>
         </header>
 
         <div class="selector-box">
-            <label for="quizSelector" style="display:block; margin-bottom:10px; font-weight:600;">Active Quiz:</label>
-            <select id="quizSelector" onchange="initQuiz()">
-                <option value="" disabled selected>Choose a section...</option>
-                <option value="mqf">TF MQF Study Guide (40 Questions)</option>
-                <option value="threat">TF Threat Parameters (29 Questions)</option>
+            <select id="toolSelector">
+                <option value="" disabled selected>Select a Tool or Quiz...</option>
+                <option value="mqf">TF MQF Study Guide (40 Qs)</option>
+                <option value="threat">TF Threat Parameters (29 Qs)</option>
+                <option value="calc">TOT Calculator</option>
             </select>
         </div>
 
         <div id="results-summary">
-            <p class="score-text">Score: <span id="finalScore">0%</span></p>
+            <p id="finalScore" style="font-size: 2rem; font-weight: 800; color: var(--text-main);">0%</p>
             <p id="scoreDetail" style="margin: 5px 0 15px 0; color: var(--text-muted);"></p>
-            <button class="submit-btn" style="background: var(--accent); padding: 10px;" onclick="initQuiz()">Reset Current Quiz</button>
+            <button class="submit-btn" style="background: var(--accent); padding: 10px;" onclick="handleReset()">Reset Section</button>
         </div>
 
+        <!-- Quiz Display Container -->
         <form id="quizForm" class="hidden">
             <div id="questions-wrapper"></div>
             <button type="button" id="main-submit" class="submit-btn" onclick="evaluateQuiz()">Submit and Review Answers</button>
         </form>
+
+        <!-- Calculator Display Container -->
+        <div id="calculatorSection" class="hidden">
+            <div class="card">
+                <h2 style="margin-top:0; font-weight:700;">Full MOT / TGT Timing Calculator</h2>
+                
+                <label class="label-text">Desired TGT Run GroundSpeed (Knots)</label>
+                <input type="number" id="speed" placeholder="Ex: 270">
+
+                <label class="label-text">Desired Distance From TGT @ Release (NM)</label>
+                <input type="number" id="tor" placeholder="Ex: 4">
+
+                <label class="label-text">TGT Run Leg Distance (NM)</label>
+                <input type="number" id="distance" placeholder="Ex: 11.6">
+
+                <label class="label-text"> Initial TOT (HH:MM:SS)</label>
+                <input type="text" id="tgtTime" placeholder="Ex: 05:52:00">
+
+                <label class="label-text">Initial IP Time (HH:MM:SS)</label>
+                <input type="text" id="ipTime" placeholder="Ex: 05:49:41">
+
+                <button class="submit-btn" onclick="calculateTOT()">Compute Times</button>
+
+                <div id="calcResults" class="hidden" style="margin-top:20px;">
+                    <div class="card" style="background:var(--highlight); border-left: 5px solid var(--accent); padding:20px;">
+                        <div id="outputMain" style="font-size:1.1rem; font-weight:700; color: var(--text-main);"></div>
+                        <p id="outputExcerpt" style="margin-top:15px; font-size:0.95rem; color: var(--text-main); white-space: pre-line;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="marking">UNCLASSIFIED</div>
 
     <script>
+        // --- DATA SETS ---
         const mqfData = [
             { q: "What is the standard setting for Chaff and Flares per the phase manual? (TF PM 2.1.6)", options: ["Chaff and Flare program is 2, 0.1, 2, 1.0 for chaff and 4, 4.0 for flares.", "Chaff and Flare program is 2, 0.2, 1, 2.0 for chaff and 4, 4.0 for flares.", "Chaff and Flare program is 2, 0.2, 2, 2.0 for chaff and 4, 4.0 for flares.", "Chaff and Flare program is 1, 0.2, 1, 2.0 for chaff and 4, 4.0 for flares."], correctText: "Chaff and Flare program is 2, 0.1, 2, 1.0 for chaff and 4, 4.0 for flares." },
             { q: "What is the max Airspeed in the T-25? (TF PM 2.2.3)", options: ["320 KIAS", "330 KIAS", "350 KIAS", "410 KIAS"], correctText: "330 KIAS" },
@@ -296,6 +319,8 @@
 
         let currentActiveData = [];
 
+        // --- CORE LOGIC ---
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -308,68 +333,66 @@
             const allAboveIndex = optionsCopy.findIndex(opt => 
                 opt.toLowerCase().includes("all of the above") || opt.toLowerCase().includes("all the above")
             );
-
             let allAbove = null;
-            if (allAboveIndex > -1) {
-                allAbove = optionsCopy.splice(allAboveIndex, 1)[0];
-            }
-
+            if (allAboveIndex > -1) { allAbove = optionsCopy.splice(allAboveIndex, 1)[0]; }
             shuffleArray(optionsCopy);
-
-            if (allAbove) {
-                optionsCopy.push(allAbove);
-            }
+            if (allAbove) optionsCopy.push(allAbove);
             return optionsCopy;
         }
 
-        function initQuiz() {
-            const selectedValue = document.getElementById('quizSelector').value;
-            if (!selectedValue) return;
-
-            document.getElementById('quizForm').classList.remove('hidden');
+        // TOOL SELECTOR HANDLER
+        document.getElementById('toolSelector').addEventListener('change', function() {
+            const tool = this.value;
+            
+            // Cleanup UI
+            document.getElementById('quizForm').classList.add('hidden');
+            document.getElementById('calculatorSection').classList.add('hidden');
             document.getElementById('results-summary').style.display = 'none';
-            document.getElementById('main-submit').style.display = 'block';
             document.getElementById('questions-wrapper').innerHTML = '';
 
-            currentActiveData = selectedValue === 'mqf' ? [...mqfData] : [...threatData];
-            shuffleArray(currentActiveData);
-
-            const wrapper = document.getElementById('questions-wrapper');
-            currentActiveData.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'question-card';
-                card.id = `card-${index}`;
+            if (tool === 'mqf' || tool === 'threat') {
+                document.getElementById('quizForm').classList.remove('hidden');
+                document.getElementById('suite-subtitle').innerText = "Randomized Study Guide Active";
                 
-                const shuffledOpts = shuffleOptions(item.options);
-                item.currentCorrectIndex = shuffledOpts.indexOf(item.correctText);
-                item.currentOptions = shuffledOpts;
+                currentActiveData = (tool === 'mqf') ? [...mqfData] : [...threatData];
+                shuffleArray(currentActiveData);
 
-                let optionsHTML = '';
-                shuffledOpts.forEach((opt, i) => {
-                    optionsHTML += `
-                        <div class="option-item">
-                            <label id="label-${index}-${i}">
-                                <input type="radio" name="q${index}" value="${i}">
-                                ${opt}
-                            </label>
-                        </div>
-                    `;
+                currentActiveData.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.id = `card-${index}`;
+                    
+                    const shuffledOpts = shuffleOptions(item.options);
+                    item.currentCorrectIndex = shuffledOpts.indexOf(item.correctText);
+
+                    let optionsHTML = '';
+                    shuffledOpts.forEach((opt, i) => {
+                        optionsHTML += `
+                            <div class="option-item">
+                                <label id="label-${index}-${i}">
+                                    <input type="radio" name="q${index}" value="${i}">
+                                    ${opt}
+                                </label>
+                            </div>
+                        `;
+                    });
+
+                    card.innerHTML = `<div class="question-text">${item.q}</div><div class="options-list">${optionsHTML}</div><div id="feedback-${index}" class="feedback-area"></div>`;
+                    document.getElementById('questions-wrapper').appendChild(card);
                 });
-
-                card.innerHTML = `
-                    <div class="question-text">${item.q}</div>
-                    <div class="options-list">${optionsHTML}</div>
-                    <div id="feedback-${index}" class="feedback-area"></div>
-                `;
-                wrapper.appendChild(card);
-            });
+            } else if (tool === 'calc') {
+                document.getElementById('calculatorSection').classList.remove('hidden');
+                document.getElementById('suite-subtitle').innerText = "TGT Run Analysis Tool";
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function handleReset() {
+            document.getElementById('toolSelector').dispatchEvent(new Event('change'));
         }
 
         function evaluateQuiz() {
             let correctCount = 0;
-            const inputs = document.querySelectorAll('input[type="radio"]');
-
             currentActiveData.forEach((item, index) => {
                 const selected = document.querySelector(`input[name="q${index}"]:checked`);
                 const feedback = document.getElementById(`feedback-${index}`);
@@ -380,27 +403,74 @@
                     if (userVal === item.currentCorrectIndex) {
                         correctCount++;
                         document.getElementById(`label-${index}-${userVal}`).classList.add('is-correct');
-                        feedback.innerHTML = '<span style="color: var(--accent)">✓ Correct</span>';
+                        feedback.innerHTML = '<span style="color: var(--accent)">✓ Correct Answer</span>';
                     } else {
                         document.getElementById(`label-${index}-${userVal}`).classList.add('is-incorrect');
-                        feedback.innerHTML = `<span style="color: var(--error)">✗ Incorrect</span>
-                            <div class="correct-reveal">Correct Answer: ${item.correctText}</div>`;
+                        feedback.innerHTML = `<span style="color: var(--error)">✗ Incorrect Choice</span><div class="correct-reveal">Correct Answer: ${item.correctText}</div>`;
                     }
                 } else {
-                    feedback.innerHTML = `<span style="color: var(--error)">✗ Skipped</span>
-                        <div class="correct-reveal">Correct Answer: ${item.correctText}</div>`;
+                    feedback.innerHTML = `<span style="color: var(--error)">✗ Question Skipped</span><div class="correct-reveal">Correct Answer: ${item.correctText}</div>`;
                 }
             });
 
-            inputs.forEach(input => input.disabled = true);
+            document.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
             document.getElementById('main-submit').style.display = 'none';
             
-            const scorePercent = Math.round((correctCount / currentActiveData.length) * 100);
-            document.getElementById('results-summary').style.display = 'block';
-            document.getElementById('finalScore').innerText = scorePercent + "%";
-            document.getElementById('scoreDetail').innerText = `Completed: ${correctCount} / ${currentActiveData.length}. Review your answers below.`;
+            const summary = document.getElementById('results-summary');
+            summary.style.display = 'block';
+            document.getElementById('finalScore').innerText = Math.round((correctCount / currentActiveData.length) * 100) + "%";
+            document.getElementById('scoreDetail').innerText = `Completed: ${correctCount} / ${currentActiveData.length}. Review answers below.`;
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- CALCULATOR LOGIC ---
+        function timeToSeconds(timeStr) {
+            const parts = timeStr.split(":").map(Number);
+            if (parts.length !== 3) return null;
+            return parts[0]*3600 + parts[1]*60 + parts[2];
+        }
+
+        function secondsToTime(seconds) {
+            seconds = Math.round(seconds);
+            while (seconds < 0) seconds += 86400;
+            seconds = seconds % 86400;
+            let h = Math.floor(seconds / 3600), m = Math.floor((seconds % 3600) / 60), s = seconds % 60;
+            return String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0') + ":" + String(s).padStart(2, '0');
+        }
+
+        function calculateTOT() {
+            const speed = parseFloat(document.getElementById("speed").value);
+            const distance = parseFloat(document.getElementById("distance").value);
+            const tor = parseFloat(document.getElementById("tor").value);
+            const tgtInput = document.getElementById("tgtTime").value;
+            const ipInput = document.getElementById("ipTime").value;
+
+            const tgtTimeSec = timeToSeconds(tgtInput);
+            const ipTimeSec = timeToSeconds(ipInput);
+
+            if (!speed || !distance || !tor || tgtTimeSec === null || ipTimeSec === null) {
+                alert("Please check all inputs and ensure time format is HH:MM:SS.");
+                return;
+            }
+
+            const travelAdjustment = (3600 * (distance - tor)) / speed;
+            const legTimeSec = tgtTimeSec - ipTimeSec;
+            const newMotSec = ipTimeSec + legTimeSec - 30 - travelAdjustment;
+            const tgtRunTimeSec = (3600 * distance) / speed;
+            const newTgtTimeSec = newMotSec + tgtRunTimeSec;
+
+            const formattedNewMot = secondsToTime(newMotSec);
+            const formattedNewTgt = secondsToTime(newTgtTimeSec);
+
+            document.getElementById("calcResults").classList.remove('hidden');
+            document.getElementById("outputMain").innerHTML = `
+                New IP Time: ${formattedNewMot} <br>
+                New TGT Time (Bottom Right): ${formattedNewTgt}
+            `;
+
+           document.getElementById("outputExcerpt").innerHTML = 
+                `To hit TOT @<strong>${tor}NM</strong> from TGT, accounting for TOF, your new IP time must be <strong>${formattedNewMot}</strong> and you must fly <strong>${speed} GS</strong> on your TGT leg. The TGT time on the bottom right will show <strong>${formattedNewTgt}</strong>`;
         }
     </script>
 </body>
